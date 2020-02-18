@@ -3,6 +3,39 @@ import argparse
 from pathlib import Path
 
 
+def show_analyse_content(double):
+    print('------ complete analyse -------')
+    print('-------------------------------')
+    print('')
+    if double:
+        for file in double:
+            print(file.__str__())
+    else:
+        print('no double file')
+
+def analyse_content(gen):
+    all_files = [file for file in gen]
+    all_files_content = []
+    double = []
+
+    for file in all_files:
+        if Path(file).is_file():
+            pathname = Path(file).__str__()
+
+            try:
+                with open(pathname) as f:
+                    lines = [line.rstrip() for line in f]
+            except UnicodeDecodeError:
+                pass
+
+            if lines not in all_files_content:
+                all_files_content.append(lines)
+            else:
+                double.append(pathname)
+
+    show_analyse_content(double)
+
+
 def show_result(original, double):
     """Show the path of the files that already exist.
 
@@ -50,9 +83,11 @@ def main():
                         help='Enter the path where you want to search',
                         type=str)
     parser.add_argument('-r', action='store_true', help='Enable recursivity')
+    parser.add_argument('-c', action='store_true', help='Check the content')
     args = parser.parse_args()
     path = args.path
     recursive = args.r
+    content = args.c
 
     # Check the path given by the user.
     if path:
@@ -66,7 +101,11 @@ def main():
     else:
         gen = p.glob('*')
 
-    get_all_files(gen)
+    if content:
+        analyse_content(gen)
+    else:
+        get_all_files(gen)
+
 
 
 if __name__ == "__main__":
