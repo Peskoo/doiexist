@@ -11,7 +11,7 @@ $ ./main.py --path /my_folder/to/analyse -r
 ```
 
 
-**Commands (optionals)**
+**Commands (optionals)**   
 `--path` to execute the script in a given path.  
 `-r` enable the script with recursive.  
 `-c` to compare the file content instead juste name.
