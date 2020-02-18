@@ -14,6 +14,8 @@ def show_analyse_content(double):
         print('no double file')
 
 def analyse_content(gen):
+    """Parse the content of all files."""
+    # TODO // Comment savoir avec quel fichier c'est en double
     all_files = [file for file in gen]
     all_files_content = []
     double = []
@@ -25,13 +27,15 @@ def analyse_content(gen):
             try:
                 with open(pathname) as f:
                     lines = [line.rstrip() for line in f]
+
             except UnicodeDecodeError:
                 pass
 
-            if lines not in all_files_content:
-                all_files_content.append(lines)
-            else:
-                double.append(pathname)
+            finally:
+                if lines not in all_files_content:
+                    all_files_content.append(lines)
+                else:
+                    double.append(pathname)
 
     show_analyse_content(double)
 
