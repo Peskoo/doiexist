@@ -1,6 +1,6 @@
-# doiexist
+# Do I Exist
 
-Search if there is duplicate files into your system.
+Search if there is duplicate files into your system.  
 You'll can find mp3, or avi files with differents titles but same content for example.
 
 **How to execute ?**
