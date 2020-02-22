@@ -11,12 +11,16 @@ def show_result(original, double):
     :param original list: List with all the files.
     :param double list: List with exclusively the doublon files.
     """
-    print("For {} files, you find ...".format(len(original)))
+    print('................................')
+    print("....... {} files founded .......".format(len(original)))
+    print('...... wait for the result .....')
+    print('................................')
 
     if double:
-        print('{} files already exist'.format(len(double)))
-        for file in double:
-            print(file.__str__())
+        print('{} files already exist'.format(len(double.keys())))
+        for copied_file, original_file in double.items():
+            print('original : {} \n---> duplicate : {}'.format(original_file,
+                                                              copied_file))
     else:
         print('0 double. Congrats !')
 
@@ -40,18 +44,20 @@ def sha256(filename):
 def analyse_content(gen):
     """Parse the content of all files."""
     all_files = [file for file in gen]
-    all_digest = []
-    double = []
+    all_digest = {}
+    double = {}
 
     for file in all_files:
         if Path(file).is_file():
             pathname = Path(file).__str__()
             digest = sha256(pathname)
 
-            if digest not in all_digest:
-                all_digest.append(digest)
+            if digest not in all_digest.values():
+                all_digest[pathname] = digest
             else:
-                double.append(pathname)
+                for source_path, source_dig in all_digest.items():
+                    if digest == source_dig:
+                        double[pathname] = source_path
 
     show_result(all_files, double)
 
@@ -76,7 +82,6 @@ def main():
     args = parser.parse_args()
     path = args.path
     recursive = args.r
-    content = args.c
 
     # Check the path given by the user.
     if path:
