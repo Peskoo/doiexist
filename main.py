@@ -11,10 +11,8 @@ def show_result(original, double):
     :param original list: List with all the files.
     :param double list: List with exclusively the doublon files.
     """
-    print('................................')
-    print("....... {} files founded .......".format(len(original)))
-    print('...... wait for the result .....')
-    print('................................')
+    print("....... {} files founded ........".format(len(original)))
+    print("................................")
 
     if double:
         print('{} files already exist'.format(len(double.keys())))
@@ -96,6 +94,11 @@ def main():
     else:
         gen = p.glob('*')
 
+    print('................................')
+    print('......... processing ...........')
+    print('................................')
+    print('......wait for the result.......')
+    print('................................')
     analyse_content(gen)
 
 
