@@ -40,7 +40,6 @@ def sha256(filename):
     return m.digest()
 
 
-
 def analyse_content(gen):
     """Parse the content of all files."""
     all_files = [file for file in gen]
