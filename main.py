@@ -1,6 +1,22 @@
 #!/usr/bin/env python3
 import argparse
+import hashlib
 from pathlib import Path
+
+
+def sha256(filename):
+    """Hash the content file.
+
+    :param path str: path to the file.
+    :return: Return a byte object.
+    """
+    # I choose sha256 to maximum avoid hash collision.
+    m = hashlib.sha256()
+    with open(filename, "rb") as f:
+        # Read chunks of 4096 bytes sequentially to be memory efficient.
+       for chunk in iter(lambda: f.read(4096), b""):
+           m.update(chunk)
+    return m.digest()
 
 
 def show_analyse_content(double):
@@ -17,25 +33,18 @@ def analyse_content(gen):
     """Parse the content of all files."""
     # TODO // Comment savoir avec quel fichier c'est en double
     all_files = [file for file in gen]
-    all_files_content = []
+    all_digest = []
     double = []
 
     for file in all_files:
         if Path(file).is_file():
             pathname = Path(file).__str__()
+            digest = sha256(pathname)
 
-            try:
-                with open(pathname) as f:
-                    lines = [line.rstrip() for line in f]
-
-            except UnicodeDecodeError:
-                pass
-
-            finally:
-                if lines not in all_files_content:
-                    all_files_content.append(lines)
-                else:
-                    double.append(pathname)
+            if digest not in all_digest:
+                all_digest.append(digest)
+            else:
+                double.append(pathname)
 
     show_analyse_content(double)
 
