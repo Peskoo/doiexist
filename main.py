@@ -1,52 +1,8 @@
 #!/usr/bin/env python3
+
 import argparse
 import hashlib
 from pathlib import Path
-
-
-def sha256(filename):
-    """Hash the content file.
-
-    :param path str: path to the file.
-    :return: Return a byte object.
-    """
-    # I choose sha256 to maximum avoid hash collision.
-    m = hashlib.sha256()
-    with open(filename, "rb") as f:
-        # Read chunks of 4096 bytes sequentially to be memory efficient.
-       for chunk in iter(lambda: f.read(4096), b""):
-           m.update(chunk)
-    return m.digest()
-
-
-def show_analyse_content(double):
-    print('------ complete analyse -------')
-    print('-------------------------------')
-    print('')
-    if double:
-        for file in double:
-            print(file.__str__())
-    else:
-        print('no double file')
-
-def analyse_content(gen):
-    """Parse the content of all files."""
-    # TODO // Comment savoir avec quel fichier c'est en double
-    all_files = [file for file in gen]
-    all_digest = []
-    double = []
-
-    for file in all_files:
-        if Path(file).is_file():
-            pathname = Path(file).__str__()
-            digest = sha256(pathname)
-
-            if digest not in all_digest:
-                all_digest.append(digest)
-            else:
-                double.append(pathname)
-
-    show_analyse_content(double)
 
 
 def show_result(original, double):
@@ -65,19 +21,40 @@ def show_result(original, double):
         print('0 double. Congrats !')
 
 
-def get_all_files(gen):
-    """Filter all the existings files in a separate list."""
+def sha256(filename):
+    """Hash the content file.
+
+    :param path str: path to the file.
+    :return: Return a byte object.
+    """
+    # I choose sha256 to maximum avoid hash collision.
+    m = hashlib.sha256()
+    with open(filename, "rb") as f:
+        # Read chunks of 4096 bytes sequentially to be memory efficient.
+       for chunk in iter(lambda: f.read(4096), b""):
+           m.update(chunk)
+    return m.digest()
+
+
+
+def analyse_content(gen):
+    """Parse the content of all files."""
     all_files = [file for file in gen]
-    list_without_double = []
+    all_digest = []
     double = []
+
     for file in all_files:
         if Path(file).is_file():
-            if file not in list_without_double:
-                list_without_double.append(file.name)
-            else:
-                double.append(file)
+            pathname = Path(file).__str__()
+            digest = sha256(pathname)
 
-    show_result(list_without_double, double)
+            if digest not in all_digest:
+                all_digest.append(digest)
+            else:
+                double.append(pathname)
+
+    show_result(all_files, double)
+
 
 
 def main():
@@ -87,16 +64,15 @@ def main():
         description="""Check if a file already exists.
 
         examples:
-        - Check all files from the actual folder
+        - Check actual folder and sub directories
         $ ./main.py -r
-        - Check files  in specific folder
+        - Check files in specific folder
         $ ./main.py --path /home/user/dir
         """)
     parser.add_argument('--path',
                         help='Enter the path where you want to search',
                         type=str)
     parser.add_argument('-r', action='store_true', help='Enable recursivity')
-    parser.add_argument('-c', action='store_true', help='Check the content')
     args = parser.parse_args()
     path = args.path
     recursive = args.r
@@ -114,11 +90,7 @@ def main():
     else:
         gen = p.glob('*')
 
-    if content:
-        analyse_content(gen)
-    else:
-        get_all_files(gen)
-
+    analyse_content(gen)
 
 
 if __name__ == "__main__":
