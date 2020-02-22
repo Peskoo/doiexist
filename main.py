@@ -45,8 +45,10 @@ def analyse_content(gen):
     double = {}
 
     for file in all_files:
-        if Path(file).is_file():
-            pathname = Path(file).__str__()
+        file_obj = Path(file)
+
+        if file_obj.is_file():
+            pathname = file_obj.__str__()
             digest = sha256(pathname)
 
             if digest not in all_digest.values():
