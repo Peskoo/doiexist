@@ -54,9 +54,11 @@ def analyse_content(gen):
             if digest not in all_digest.values():
                 all_digest[pathname] = digest
             else:
-                for source_path, source_dig in all_digest.items():
-                    if digest == source_dig:
-                        double[pathname] = source_path
+                double[pathname] = next(
+					source_path 
+					for source_path, source_dig in all_digest.items()
+					if digest == source_dig
+					)
 
     show_result(all_files, double)
 
