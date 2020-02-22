@@ -3,7 +3,7 @@
 Search if there is duplicate files into your system.  
 You'll can find mp3, or avi files with differents titles but same content for example.
 
-**How to execute ?**
+**How to execute ?**  
 1/
 ```bash
 $ sudo chmod +x main.py
