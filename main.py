@@ -39,7 +39,6 @@ def sha256(filename):
 
 
 def analyse_content(gen):
-    """Parse the content of all files."""
     all_files = [file for file in gen]
     all_digest = {}
     double = {}
@@ -50,15 +49,12 @@ def analyse_content(gen):
         if file_obj.is_file():
             pathname = file_obj.__str__()
             digest = sha256(pathname)
+            dig_founded = all_digest.get(digest, None)
 
-            if digest not in all_digest.values():
-                all_digest[pathname] = digest
+            if dig_founded:
+                double[pathname] = dig_founded
             else:
-                double[pathname] = next(
-					source_path 
-					for source_path, source_dig in all_digest.items()
-					if digest == source_dig
-					)
+                all_digest[digest] = pathname
 
     show_result(all_files, double)
 
