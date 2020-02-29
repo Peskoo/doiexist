@@ -2,62 +2,72 @@
 
 import argparse
 import hashlib
+import multiprocessing 
 from pathlib import Path
 
 
-def show_result(original, double):
+DIGEST = {}
+
+
+def show_result(flipped):
     """Show the path of the files that already exist.
 
     :param original list: List with all the files.
     :param double list: List with exclusively the doublon files.
     """
-    print("....... {} files founded ........".format(len(original)))
+    print("....... {} files founded ........".format(len(DIGEST.keys())))
     print("................................")
 
-    if double:
-        print('{} files already exist'.format(len(double.keys())))
-        for copied_file, original_file in double.items():
-            print('original : {} \n---> duplicate : {}'.format(original_file,
-                                                              copied_file))
-    else:
-        print('0 double. Congrats !')
+    for k, v in flipped.items():
+        if len(v) > 1:
+            print('Duplicate files founded :')
+            for f in v:
+                print(' - ',f)
+    print(".............done................")
 
 
-def sha256(filename):
+def comparate_digest():
+    """Check and return existing files."""
+    flipped = {}
+
+    for key, value in DIGEST.items():
+        print(key)
+        if value not in flipped:
+            flipped[value] = [key]
+        else:
+            flipped[value].append(key) 
+
+    show_result(flipped)
+
+
+def sha256(path):
     """Hash the content file.
 
     :param path str: path to the file.
-    :return: Return a byte object.
     """
     # I choose sha256 to maximum avoid hash collision.
     m = hashlib.sha256()
-    with open(filename, "rb") as f:
+    with open(path, "rb") as f:
         # Read chunks of 4096 bytes sequentially to be memory efficient.
        for chunk in iter(lambda: f.read(4096), b""):
            m.update(chunk)
-    return m.digest()
+    DIGEST[path] = m.digest()
 
 
 def analyse_content(gen):
+    """Execute hash for each selected files."""
     all_files = [file for file in gen]
-    all_digest = {}
-    double = {}
 
     for file in all_files:
         file_obj = Path(file)
 
         if file_obj.is_file():
             pathname = file_obj.__str__()
-            digest = sha256(pathname)
-            dig_founded = all_digest.get(digest, None)
+            pr = multiprocessing.Process(target=sha256, args=(pathname,))
+            pr.start()
 
-            if dig_founded:
-                double[pathname] = dig_founded
-            else:
-                all_digest[digest] = pathname
-
-    show_result(all_files, double)
-
+    pr.join()
+    comparate_digest()
 
 
 def main():
