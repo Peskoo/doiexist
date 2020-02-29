@@ -12,8 +12,7 @@ DIGEST = {}
 def show_result(flipped):
     """Show the path of the files that already exist.
 
-    :param original list: List with all the files.
-    :param double list: List with exclusively the doublon files.
+    :param flipped dict: each values are lists with duplicates files.
     """
     print("....... {} files founded ........".format(len(DIGEST.keys())))
     print("................................")
@@ -27,7 +26,7 @@ def show_result(flipped):
 
 
 def comparate_digest():
-    """Check and return existing files."""
+    """Check and return duplicates files."""
     flipped = {}
 
     for key, value in DIGEST.items():
