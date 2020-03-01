@@ -14,7 +14,7 @@ def show_result(flipped):
 
     :param flipped dict: each values are lists with duplicates files.
     """
-    print("....... {} files founded ........".format(len(DIGEST.keys())))
+    print("...........finished.............")
     print("................................")
 
     for k, v in flipped.items():
@@ -22,7 +22,8 @@ def show_result(flipped):
             print('Duplicate files founded :')
             for f in v:
                 print(' - ',f)
-    print(".............done................")
+            print("................................")
+    print(".............done...............")
 
 
 def comparate_digest():
@@ -30,7 +31,6 @@ def comparate_digest():
     flipped = {}
 
     for key, value in DIGEST.items():
-        print(key)
         if value not in flipped:
             flipped[value] = [key]
         else:
@@ -46,11 +46,12 @@ def sha256(path):
     """
     # I choose sha256 to maximum avoid hash collision.
     m = hashlib.sha256()
+    print('analysing :',path)
     with open(path, "rb") as f:
         # Read chunks of 4096 bytes sequentially to be memory efficient.
        for chunk in iter(lambda: f.read(4096), b""):
            m.update(chunk)
-    DIGEST[path] = m.digest()
+    return m.digest()
 
 
 def analyse_content(gen):
@@ -62,10 +63,10 @@ def analyse_content(gen):
 
         if file_obj.is_file():
             pathname = file_obj.__str__()
-            pr = multiprocessing.Process(target=sha256, args=(pathname,))
-            pr.start()
+            with multiprocessing.Pool() as pool:
+                res = pool.map(sha256, (pathname,))
+                DIGEST[pathname] = res[0]
 
-    pr.join()
     comparate_digest()
 
 
